@@ -10,6 +10,7 @@ export function getSocket(): TypedSocket {
     socket = io(process.env.NEXT_PUBLIC_SOCKET_URL, {
       withCredentials: true,
       autoConnect: false,
+      transports: ["websocket"],
     })
   }
   return socket

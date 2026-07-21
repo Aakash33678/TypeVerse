@@ -55,12 +55,14 @@ const io = new Server<
 
 // Auth middleware
 io.use(async (socket, next) => {
+  console.log("Cookies:", socket.handshake.headers.cookie);
   try {
     const session = await auth.api.getSession({
       headers: new Headers({
         cookie: socket.handshake.headers.cookie ?? "",
       }),
     });
+    console.log("Session:", session);
 
     if (!session) {
       return next(new Error("Unauthorized"));
