@@ -9,7 +9,7 @@ import "dotenv/config";
 import { registerHandlers } from "./socket-handlers";
 import { auth } from "../lib/auth";
 
-console.log("Better_AUTH_SECRET loaded:", !!process.env.Better_AUTH_SECRET);
+console.log("Better_AUTH_SECRET loaded:", !!process.env.BETTER_AUTH_SECRET);
 const httpServer = createServer((req, res) => {
   const url = req.url || "/";
 
