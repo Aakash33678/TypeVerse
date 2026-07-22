@@ -7,7 +7,7 @@ import type {
 } from "../types/socket";
 import "dotenv/config";
 import { registerHandlers } from "./socket-handlers";
-import { auth } from "../lib/auth";
+import jwt from "jsonwebtoken";
 
 console.log("Better_AUTH_SECRET loaded:", !!process.env.BETTER_AUTH_SECRET);
 const httpServer = createServer((req, res) => {
@@ -54,29 +54,30 @@ const io = new Server<
 });
 
 // Auth middleware
-io.use(async (socket, next) => {
-  console.log("Cookie:", socket.handshake.headers.cookie);
-
+io.use((socket, next) => {
   try {
-    const session = await auth.api.getSession({
-      headers: new Headers({
-        cookie: socket.handshake.headers.cookie ?? "",
-      }),
-    });
+    const token = socket.handshake.auth?.token;
 
-    console.log("Session:", session);
-
-    if (!session) {
+    if (!token) {
       return next(new Error("Unauthorized"));
     }
 
-    socket.data.userId = session.user.id;
-    socket.data.userName = session.user.name;
-    socket.data.userImage = session.user.image ?? null;
+    const payload = jwt.verify(
+      token,
+      process.env.SOCKET_JWT_SECRET!
+    ) as {
+      userId: string;
+      name: string;
+      image: string | null;
+    };
+
+    socket.data.userId = payload.userId;
+    socket.data.userName = payload.name;
+    socket.data.userImage = payload.image;
 
     next();
   } catch (err) {
-    console.error(err);
+    console.error("JWT verification failed:", err);
     next(new Error("Unauthorized"));
   }
 });
