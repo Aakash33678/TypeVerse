@@ -55,29 +55,26 @@ const io = new Server<
 
 // Auth middleware
 io.use((socket, next) => {
+  console.log("Handshake auth:", socket.handshake.auth);
+
+  const token = socket.handshake.auth?.token;
+  console.log("Received token:", token);
+
   try {
-    const token = socket.handshake.auth?.token;
-
-    if (!token) {
-      return next(new Error("Unauthorized"));
-    }
-
     const payload = jwt.verify(
       token,
       process.env.SOCKET_JWT_SECRET!
-    ) as {
-      userId: string;
-      name: string;
-      image: string | null;
-    };
+    );
 
-    socket.data.userId = payload.userId;
-    socket.data.userName = payload.name;
-    socket.data.userImage = payload.image;
+    console.log("Verified payload:", payload);
+
+    socket.data.userId = (payload as any).userId;
+    socket.data.userName = (payload as any).name;
+    socket.data.userImage = (payload as any).image;
 
     next();
   } catch (err) {
-    console.error("JWT verification failed:", err);
+    console.error("JWT verify error:", err);
     next(new Error("Unauthorized"));
   }
 });
