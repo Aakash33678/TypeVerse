@@ -54,28 +54,9 @@ const io = new Server<
 });
 
 // Auth middleware
-io.use(async (socket, next) => {
-  console.log("Cookies:", socket.handshake.headers.cookie);
-  try {
-    const session = await auth.api.getSession({
-      headers: new Headers({
-        cookie: socket.handshake.headers.cookie ?? "",
-      }),
-    });
-    console.log("Session:", session);
-
-    if (!session) {
-      return next(new Error("Unauthorized"));
-    }
-
-    socket.data.userId = session.user.id;
-    socket.data.userName = session.user.name;
-    socket.data.userImage = session.user.image ?? null;
-
-    next();
-  } catch (error) {
-    next(new Error("Unauthorized"));
-  }
+io.use((socket, next) => {
+  console.log("Socket connected attempt:", socket.id);
+  next();
 });
 
 io.on("connection", (socket) => {
@@ -87,7 +68,8 @@ const PORT = parseInt(
   process.env.PORT || process.env.SOCKET_PORT || "8080",
   10,
 );
-
+console.log("process.env.PORT =", process.env.PORT);
+console.log("PORT =", PORT);
 httpServer.listen(PORT, () => {
   console.log(`[Socket.IO] Server running on port ${PORT}`);
 });
