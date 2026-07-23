@@ -56,7 +56,6 @@ export default function TypingTestPage() {
       <input
         ref={inputRef}
         autoFocus
-        onFocus={() => console.log("focused")}
         onBlur={() => {
           requestAnimationFrame(() => {
             if (document.activeElement !== inputRef.current) {

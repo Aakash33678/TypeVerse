@@ -55,18 +55,14 @@ const io = new Server<
 
 // Auth middleware
 io.use((socket, next) => {
-  console.log("Handshake auth:", socket.handshake.auth);
 
   const token = socket.handshake.auth?.token;
-  console.log("Received token:", token);
 
   try {
     const payload = jwt.verify(
       token,
       process.env.SOCKET_JWT_SECRET!
     );
-
-    console.log("Verified payload:", payload);
 
     socket.data.userId = (payload as any).userId;
     socket.data.userName = (payload as any).name;

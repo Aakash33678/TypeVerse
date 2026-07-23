@@ -19,7 +19,6 @@ export async function getSocket(): Promise<TypedSocket> {
     }
 
     const { token } = await res.json();
-    console.log("Socket JWT:", token);
 
     socket = io(process.env.NEXT_PUBLIC_SOCKET_URL!, {
       withCredentials: true,
