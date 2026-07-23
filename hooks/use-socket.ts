@@ -65,7 +65,7 @@ export function useSocket(): UseSocketReturn {
         setIsConnecting(true);
         setError(null);
 
-        const socket = getSocket();
+        const socket = await getSocket();
         socketRef.current = socket;
 
         socket.on("connect", handleConnect);
